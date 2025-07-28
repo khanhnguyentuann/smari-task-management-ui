@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { FolderKanban, CheckSquare, Clock, AlertTriangle, Plus, Activity } from "lucide-react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { GlassmorphismCard } from "@/components/glassmorphism-card"
+import { EnhancedButton } from "@/components/enhanced-button"
+import { motion } from "framer-motion"
 
 interface User {
   name: string
@@ -72,54 +74,68 @@ export function DashboardContent({ user, onNavigate }: DashboardContentProps) {
         <div className="space-y-6">
           {/* Overview Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-                <FolderKanban className="h-4 w-4 text-blue-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.totalProjects}</div>
-                <p className="text-xs text-muted-foreground">+2 from last month</p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
-                <CheckSquare className="h-4 w-4 text-green-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.activeTasks}</div>
-                <p className="text-xs text-muted-foreground">+5 from yesterday</p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Completed Tasks</CardTitle>
-                <Clock className="h-4 w-4 text-purple-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.completedTasks}</div>
-                <p className="text-xs text-muted-foreground">+12 this week</p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Overdue Tasks</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-red-600">{stats.overdueTasks}</div>
-                <p className="text-xs text-muted-foreground">Needs attention</p>
-              </CardContent>
-            </Card>
+            {[
+              {
+                title: "Total Projects",
+                value: stats.totalProjects,
+                icon: FolderKanban,
+                color: "text-blue-600",
+                change: "+2 from last month",
+              },
+              {
+                title: "Active Tasks",
+                value: stats.activeTasks,
+                icon: CheckSquare,
+                color: "text-green-600",
+                change: "+5 from yesterday",
+              },
+              {
+                title: "Completed Tasks",
+                value: stats.completedTasks,
+                icon: Clock,
+                color: "text-purple-600",
+                change: "+12 this week",
+              },
+              {
+                title: "Overdue Tasks",
+                value: stats.overdueTasks,
+                icon: AlertTriangle,
+                color: "text-red-600",
+                change: "Needs attention",
+              },
+            ].map((stat, index) => (
+              <motion.div
+                key={stat.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <GlassmorphismCard className="hover:shadow-md transition-shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                    <motion.div whileHover={{ rotate: 10, scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }}>
+                      <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                    </motion.div>
+                  </CardHeader>
+                  <CardContent>
+                    <motion.div
+                      className="text-2xl font-bold"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: index * 0.1 + 0.2, type: "spring" }}
+                    >
+                      {stat.value}
+                    </motion.div>
+                    <p className="text-xs text-muted-foreground">{stat.change}</p>
+                  </CardContent>
+                </GlassmorphismCard>
+              </motion.div>
+            ))}
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Recent Activities */}
-            <Card>
+            <GlassmorphismCard>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5" />
@@ -150,21 +166,21 @@ export function DashboardContent({ user, onNavigate }: DashboardContentProps) {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </GlassmorphismCard>
 
             {/* Quick Actions */}
-            <Card>
+            <GlassmorphismCard>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {user.role === "Admin" && (
-                  <Button onClick={() => onNavigate("projects")} className="w-full justify-start" size="lg">
+                  <EnhancedButton onClick={() => onNavigate("projects")} className="w-full justify-start" size="lg">
                     <Plus className="h-4 w-4 mr-2" />
                     Create New Project
-                  </Button>
+                  </EnhancedButton>
                 )}
-                <Button
+                <EnhancedButton
                   onClick={() => onNavigate("my-tasks")}
                   variant="outline"
                   className="w-full justify-start"
@@ -172,8 +188,8 @@ export function DashboardContent({ user, onNavigate }: DashboardContentProps) {
                 >
                   <CheckSquare className="h-4 w-4 mr-2" />
                   Create New Task
-                </Button>
-                <Button
+                </EnhancedButton>
+                <EnhancedButton
                   onClick={() => onNavigate("projects")}
                   variant="outline"
                   className="w-full justify-start"
@@ -181,9 +197,9 @@ export function DashboardContent({ user, onNavigate }: DashboardContentProps) {
                 >
                   <FolderKanban className="h-4 w-4 mr-2" />
                   View All Projects
-                </Button>
+                </EnhancedButton>
               </CardContent>
-            </Card>
+            </GlassmorphismCard>
           </div>
         </div>
       </div>

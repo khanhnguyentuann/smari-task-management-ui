@@ -3,12 +3,11 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Search, CheckSquare, Clock, AlertTriangle, Sparkles, Calendar } from "lucide-react"
+import { Search, CheckSquare, Clock, AlertTriangle, Calendar } from "lucide-react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { AnimatedTaskCard } from "@/components/animated-task-card"
 
 interface User {
   name: string
@@ -126,44 +125,6 @@ export function MyTasks({ user }: MyTasksProps) {
     later: filteredTasks.filter((task) => getDeadlineStatus(task.deadline).category === "later"),
   }
 
-  const TaskCard = ({ task }: { task: Task }) => {
-    const deadlineStatus = getDeadlineStatus(task.deadline)
-
-    return (
-      <Card className="hover:shadow-md transition-shadow">
-        <CardContent className="p-4 space-y-3">
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <h4 className="font-medium">{task.title}</h4>
-              <p className="text-sm text-muted-foreground">{task.project}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`} />
-              <Badge variant="outline" className="text-xs">
-                {task.priority}
-              </Badge>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-2 p-2 bg-blue-50 dark:bg-blue-950/20 rounded-md">
-            <Sparkles className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-blue-800 dark:text-blue-200">{task.aiSummary}</p>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <Badge variant={task.status === "done" ? "default" : "secondary"}>
-              {task.status === "todo" ? "To Do" : task.status === "inProgress" ? "In Progress" : "Done"}
-            </Badge>
-            <div className={`text-xs flex items-center gap-1 ${deadlineStatus.color}`}>
-              <Calendar className="h-3 w-3" />
-              {deadlineStatus.label}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
   const TaskGroup = ({ title, tasks, icon }: { title: string; tasks: Task[]; icon: React.ReactNode }) => {
     if (tasks.length === 0) return null
 
@@ -175,7 +136,7 @@ export function MyTasks({ user }: MyTasksProps) {
         </h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <AnimatedTaskCard key={task.id} task={task} />
           ))}
         </div>
       </div>

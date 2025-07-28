@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, FolderKanban, CheckSquare, User, Sparkles } from "lucide-react"
+import { LayoutDashboard, FolderKanban, CheckSquare, User } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -10,19 +10,22 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { UserMenu } from "@/components/user-menu"
+import { motion } from "framer-motion"
+import { useSidebar } from "@/components/ui/sidebar"
 
 interface AppSidebarProps {
   user: {
+    id: string
     name: string
     email: string
     role: "Admin" | "Member"
     avatar: string
+    department?: string
   }
   currentPage: string
   onNavigate: (page: string) => void
+  onLogout: () => void
 }
 
 const menuItems = [
@@ -48,56 +51,71 @@ const menuItems = [
   },
 ]
 
-export function AppSidebar({ user, currentPage, onNavigate }: AppSidebarProps) {
+export function AppSidebar({ user, currentPage, onNavigate, onLogout }: AppSidebarProps) {
+  const { setOpenMobile, isMobile } = useSidebar()
+
+  const handleNavigate = (page: string) => {
+    onNavigate(page)
+    // Auto-close sidebar on mobile after navigation
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
+
   return (
     <Sidebar className="border-r">
       <SidebarHeader className="border-b p-4">
-        <div className="flex items-center gap-2">
+        <motion.div
+          className="flex items-center gap-2"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
           <div className="flex items-center gap-2 text-xl font-bold text-blue-600">
-            <Sparkles className="h-6 w-6" />
+            <motion.div
+              animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "reverse",
+              }}
+            >
+              <div className="text-2xl">🤖</div>
+            </motion.div>
             Smart Task
           </div>
-        </div>
+        </motion.div>
       </SidebarHeader>
 
       <SidebarContent className="p-4">
         <SidebarMenu>
-          {menuItems.map((item) => (
+          {menuItems.map((item, index) => (
             <SidebarMenuItem key={item.key}>
-              <SidebarMenuButton
-                onClick={() => onNavigate(item.key)}
-                isActive={currentPage === item.key}
-                className="w-full justify-start"
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                <item.icon className="h-4 w-4" />
-                <span>{item.title}</span>
-              </SidebarMenuButton>
+                <SidebarMenuButton
+                  onClick={() => handleNavigate(item.key)}
+                  isActive={currentPage === item.key}
+                  className="w-full justify-start hover:scale-105 transition-transform"
+                >
+                  <motion.div whileHover={{ rotate: 10, scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }}>
+                    <item.icon className="h-4 w-4" />
+                  </motion.div>
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              </motion.div>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
       </SidebarContent>
 
       <SidebarFooter className="border-t p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-              <AvatarFallback>
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{user.name}</span>
-              <Badge variant={user.role === "Admin" ? "default" : "secondary"} className="text-xs w-fit">
-                {user.role}
-              </Badge>
-            </div>
-          </div>
-          <ThemeToggle />
-        </div>
+        <UserMenu user={user} onNavigate={handleNavigate} onLogout={onLogout} />
       </SidebarFooter>
     </Sidebar>
   )

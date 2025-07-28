@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowLeft, Plus, Users, Settings, CheckSquare, Clock, AlertTriangle, Sparkles } from "lucide-react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { CreateTaskModal } from "@/components/create-task-modal"
+import { AnimatedTaskCard } from "@/components/animated-task-card"
 
 interface User {
   name: string
@@ -235,7 +236,7 @@ export function ProjectDetail({ projectId, user, onBack }: ProjectDetailProps) {
                   </div>
                   <div className="space-y-3">
                     {tasksByStatus.todo.map((task) => (
-                      <TaskCard key={task.id} task={task} />
+                      <AnimatedTaskCard key={task.id} task={task} />
                     ))}
                   </div>
                 </div>
@@ -250,7 +251,7 @@ export function ProjectDetail({ projectId, user, onBack }: ProjectDetailProps) {
                   </div>
                   <div className="space-y-3">
                     {tasksByStatus.inProgress.map((task) => (
-                      <TaskCard key={task.id} task={task} />
+                      <AnimatedTaskCard key={task.id} task={task} />
                     ))}
                   </div>
                 </div>
@@ -265,7 +266,7 @@ export function ProjectDetail({ projectId, user, onBack }: ProjectDetailProps) {
                   </div>
                   <div className="space-y-3">
                     {tasksByStatus.done.map((task) => (
-                      <TaskCard key={task.id} task={task} />
+                      <AnimatedTaskCard key={task.id} task={task} />
                     ))}
                   </div>
                 </div>
