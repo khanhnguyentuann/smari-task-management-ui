@@ -4,12 +4,14 @@ import type React from "react"
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { Search, CheckSquare, Clock, AlertTriangle, Calendar } from "lucide-react"
+import { Search, CheckSquare, Clock, AlertTriangle, Calendar } from 'lucide-react'
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AnimatedTaskCard } from "@/components/animated-task-card"
+import { TaskDetailModal } from "@/components/task-detail-modal"
 
 interface User {
+  id: string
   name: string
   email: string
   role: "Admin" | "Member"
@@ -83,6 +85,30 @@ export function MyTasks({ user }: MyTasksProps) {
     },
   ])
 
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [showTaskDetail, setShowTaskDetail] = useState(false)
+
+  const teamMembers = [
+    { id: "1", name: "John Doe", avatar: "/placeholder.svg?height=32&width=32", email: "john@company.com" },
+    { id: "2", name: "Sarah Wilson", avatar: "/placeholder.svg?height=32&width=32", email: "sarah@company.com" },
+    { id: "3", name: "Mike Johnson", avatar: "/placeholder.svg?height=32&width=32", email: "mike@company.com" },
+  ]
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task)
+    setShowTaskDetail(true)
+  }
+
+  const handleTaskSave = (updatedTask: Task) => {
+    console.log("Task updated:", updatedTask)
+    setShowTaskDetail(false)
+  }
+
+  const handleTaskDelete = (taskId: string) => {
+    console.log("Task deleted:", taskId)
+    setShowTaskDetail(false)
+  }
+
   const getDeadlineStatus = (deadline: string) => {
     const today = new Date()
     const deadlineDate = new Date(deadline)
@@ -136,7 +162,11 @@ export function MyTasks({ user }: MyTasksProps) {
         </h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {tasks.map((task) => (
-            <AnimatedTaskCard key={task.id} task={task} />
+            <AnimatedTaskCard 
+              key={task.id} 
+              task={task} 
+              onClick={() => handleTaskClick(task)}
+            />
           ))}
         </div>
       </div>
@@ -228,6 +258,19 @@ export function MyTasks({ user }: MyTasksProps) {
           )}
         </div>
       </div>
+      <TaskDetailModal
+        task={selectedTask}
+        open={showTaskDetail}
+        onOpenChange={setShowTaskDetail}
+        onSave={handleTaskSave}
+        onDelete={handleTaskDelete}
+        teamMembers={teamMembers}
+        currentUser={{
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+        }}
+      />
     </div>
   )
 }

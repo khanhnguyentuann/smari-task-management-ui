@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, Plus, Users, CheckSquare, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react"
+import { Search, Plus, Users, CheckSquare, MoreHorizontal, Edit, Trash2, Eye } from 'lucide-react'
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { CreateProjectModal } from "@/components/create-project-modal"
+import { CreateProjectForm } from "@/components/create-project-form"
 
 interface User {
   name: string
@@ -38,7 +38,7 @@ interface ProjectsListProps {
 
 export function ProjectsList({ user, onProjectSelect }: ProjectsListProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showCreateForm, setShowCreateForm] = useState(false)
   const [projects] = useState<Project[]>([
     {
       id: "1",
@@ -75,6 +75,21 @@ export function ProjectsList({ user, onProjectSelect }: ProjectsListProps) {
       project.description.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
+  if (showCreateForm) {
+    return (
+      <CreateProjectForm
+        onBack={() => setShowCreateForm(false)}
+        onSave={(project) => {
+          // Here you would typically save to your backend
+          console.log("New project:", project)
+          setShowCreateForm(false)
+          // You could also update the projects list here
+        }}
+        currentUser={user}
+      />
+    )
+  }
+
   return (
     <div className="flex flex-col h-full">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -100,7 +115,7 @@ export function ProjectsList({ user, onProjectSelect }: ProjectsListProps) {
               />
             </div>
             {user.role === "Admin" && (
-              <Button onClick={() => setShowCreateModal(true)}>
+              <Button onClick={() => setShowCreateForm(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create New Project
               </Button>
@@ -207,7 +222,7 @@ export function ProjectsList({ user, onProjectSelect }: ProjectsListProps) {
                 {searchQuery ? "No projects found matching your search." : "No projects yet."}
               </div>
               {user.role === "Admin" && !searchQuery && (
-                <Button className="mt-4" onClick={() => setShowCreateModal(true)}>
+                <Button className="mt-4" onClick={() => setShowCreateForm(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Your First Project
                 </Button>
@@ -216,8 +231,6 @@ export function ProjectsList({ user, onProjectSelect }: ProjectsListProps) {
           )}
         </div>
       </div>
-
-      <CreateProjectModal open={showCreateModal} onOpenChange={setShowCreateModal} user={user} />
     </div>
   )
 }

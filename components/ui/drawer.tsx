@@ -2,17 +2,13 @@
 
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
-
 import { cn } from "@/lib/utils"
 
 const Drawer = ({
   shouldScaleBackground = true,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root
-    shouldScaleBackground={shouldScaleBackground}
-    {...props}
-  />
+  <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />
 )
 Drawer.displayName = "Drawer"
 
@@ -70,10 +66,7 @@ const DrawerFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("mt-auto flex flex-col gap-2 p-4", className)}
-    {...props}
-  />
+  <div className={cn("mt-auto flex flex-col gap-2 p-4", className)} {...props} />
 )
 DrawerFooter.displayName = "DrawerFooter"
 

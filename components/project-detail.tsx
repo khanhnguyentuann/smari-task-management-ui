@@ -6,16 +6,18 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Plus, Users, Settings, CheckSquare, Clock, AlertTriangle, Sparkles } from "lucide-react"
+import { ArrowLeft, Plus, Users, Settings, CheckSquare, Clock, AlertTriangle, Sparkles } from 'lucide-react'
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { CreateTaskModal } from "@/components/create-task-modal"
 import { AnimatedTaskCard } from "@/components/animated-task-card"
+import { TaskDetailModal } from "@/components/task-detail-modal"
 
 interface User {
   name: string
   email: string
   role: "Admin" | "Member"
   avatar: string
+  id: string
 }
 
 interface Task {
@@ -80,6 +82,32 @@ export function ProjectDetail({ projectId, user, onBack }: ProjectDetailProps) {
       status: "done",
     },
   ])
+
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [showTaskDetail, setShowTaskDetail] = useState(false)
+
+  const teamMembers = [
+    { id: "1", name: "John Doe", avatar: "/placeholder.svg?height=32&width=32", email: "john@company.com" },
+    { id: "2", name: "Sarah Wilson", avatar: "/placeholder.svg?height=32&width=32", email: "sarah@company.com" },
+    { id: "3", name: "Mike Johnson", avatar: "/placeholder.svg?height=32&width=32", email: "mike@company.com" },
+  ]
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task)
+    setShowTaskDetail(true)
+  }
+
+  const handleTaskSave = (updatedTask: Task) => {
+    // Update task in your state management
+    console.log("Task updated:", updatedTask)
+    setShowTaskDetail(false)
+  }
+
+  const handleTaskDelete = (taskId: string) => {
+    // Delete task from your state management
+    console.log("Task deleted:", taskId)
+    setShowTaskDetail(false)
+  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -236,7 +264,11 @@ export function ProjectDetail({ projectId, user, onBack }: ProjectDetailProps) {
                   </div>
                   <div className="space-y-3">
                     {tasksByStatus.todo.map((task) => (
-                      <AnimatedTaskCard key={task.id} task={task} />
+                      <AnimatedTaskCard
+                        key={task.id}
+                        task={task}
+                        onClick={() => handleTaskClick(task)}
+                      />
                     ))}
                   </div>
                 </div>
@@ -251,7 +283,11 @@ export function ProjectDetail({ projectId, user, onBack }: ProjectDetailProps) {
                   </div>
                   <div className="space-y-3">
                     {tasksByStatus.inProgress.map((task) => (
-                      <AnimatedTaskCard key={task.id} task={task} />
+                      <AnimatedTaskCard
+                        key={task.id}
+                        task={task}
+                        onClick={() => handleTaskClick(task)}
+                      />
                     ))}
                   </div>
                 </div>
@@ -266,7 +302,11 @@ export function ProjectDetail({ projectId, user, onBack }: ProjectDetailProps) {
                   </div>
                   <div className="space-y-3">
                     {tasksByStatus.done.map((task) => (
-                      <AnimatedTaskCard key={task.id} task={task} />
+                      <AnimatedTaskCard
+                        key={task.id}
+                        task={task}
+                        onClick={() => handleTaskClick(task)}
+                      />
                     ))}
                   </div>
                 </div>
@@ -317,7 +357,19 @@ export function ProjectDetail({ projectId, user, onBack }: ProjectDetailProps) {
           </Tabs>
         </div>
       </div>
-
+      <TaskDetailModal
+        task={selectedTask}
+        open={showTaskDetail}
+        onOpenChange={setShowTaskDetail}
+        onSave={handleTaskSave}
+        onDelete={handleTaskDelete}
+        teamMembers={teamMembers}
+        currentUser={{
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+        }}
+      />
       <CreateTaskModal open={showCreateTask} onOpenChange={setShowCreateTask} projectId={projectId} user={user} />
     </div>
   )

@@ -3,7 +3,7 @@
 import { GlassmorphismCard } from "@/components/glassmorphism-card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Calendar } from "lucide-react"
+import { Calendar } from 'lucide-react'
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
@@ -23,9 +23,10 @@ interface Task {
 interface AnimatedTaskCardProps {
   task: Task
   className?: string
+  onClick?: () => void  // Add this line
 }
 
-export function AnimatedTaskCard({ task, className }: AnimatedTaskCardProps) {
+export function AnimatedTaskCard({ task, className, onClick }: AnimatedTaskCardProps) {
   const getPriorityAnimation = (priority: string) => {
     switch (priority) {
       case "High":
@@ -76,6 +77,7 @@ export function AnimatedTaskCard({ task, className }: AnimatedTaskCardProps) {
         task.status === "done" && "animate-sparkle", // Sparkle animation for completed tasks ✨
         className,
       )}
+      onClick={onClick}  // Add this line
     >
       <GlassmorphismCard className="group cursor-pointer">
         <div className="p-4 space-y-3">
